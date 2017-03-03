@@ -7,13 +7,13 @@
 
 // Sets default values for this component's properties
 UHoverSuspensionComponent::UHoverSuspensionComponent()
-	: IsMagnetic(false), TargetBody(nullptr)
+	: IsMagnetic(false),
+	TargetBody(nullptr),
+	ForceDirEnum(EHoverSuspensionForceDirEnum::HFD_SuspensionUp)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
 }
 
 
@@ -21,9 +21,6 @@ UHoverSuspensionComponent::UHoverSuspensionComponent()
 void UHoverSuspensionComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
-	
 }
 
 
@@ -56,6 +53,21 @@ void DrawDebugLinetrace(bool bHit, const FHitResult& HitResult, const UWorld* Wo
 }
 
 
+float UHoverSuspensionComponent::CalculateSpringForce(float DeltaTime, const FVector& HitLocation)
+{
+	// Update current spring velocity used for dampening
+	UpdateSpringVelocity(HitLocation, DeltaTime);
+	
+	// calculate and apply damped spring hover force
+	float SpringRatio = DistanceFromSurface / HoverDistance;
+	float HoverForceVec = (SpringRatio * SpringStiffness - HoverDampening * SpringVelocity);
+	
+	PrevDistanceFromSurface = DistanceFromSurface;
+
+	return HoverForceVec;
+}
+
+
 // Called every frame
 void UHoverSuspensionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -79,24 +91,24 @@ void UHoverSuspensionComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 	FHitResult OutHit = FHitResult();	
 	bool bHit = GetWorld()->LineTraceSingleByChannel(OutHit, WorldPos, TraceEnd, ECC_Visibility);
 
+	// temp debug draw
 	DrawDebugLinetrace(bHit, OutHit, GetWorld(), WorldPos, TraceEnd);
 
 	if(!bHit)
 		return;
 
-	UpdateSpringVelocity(OutHit.Location, DeltaTime);
+	// Calculate and set hover force
 
-	// calculate and apply damped spring hover force
-	float SpringRatio = DistanceFromSurface / HoverDistance;
 
-	FVector HoverForceVec = UpDir * (SpringRatio * SpringStiffness - HoverDampening * SpringVelocity);
+	FVector ForceDir;
+	switch(ForceDirEnum) {
+	case EHoverSuspensionForceDirEnum::HFD_SuspensionUp: ForceDir = UpDir; break;
+	case EHoverSuspensionForceDirEnum::HFD_SurfaceNormal: ForceDir = OutHit.ImpactNormal; break;
+	}
+
+	FVector HoverForceVec = ForceDir * CalculateSpringForce(DeltaTime, OutHit.Location);
 
 	TargetBody->AddForceAtLocation(HoverForceVec, WorldPos);
-
-	PrevDistanceFromSurface = DistanceFromSurface;
-
-	// Debug vis
-	//DrawDebugLine(GetWorld(), HitResult.Location, HitResult.Location + HitResult.Normal * 100.0f, FColor::Blue, false, 10.0f, 0, 5.0f);
 
 }
 

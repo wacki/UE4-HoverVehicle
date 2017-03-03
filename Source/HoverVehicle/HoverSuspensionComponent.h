@@ -6,12 +6,22 @@
 #include "HoverSuspensionComponent.generated.h"
 
 
+UENUM(BlueprintType)		//"BlueprintType" is essential to include
+enum class EHoverSuspensionForceDirEnum : uint8 {
+	HFD_SuspensionUp 	UMETA(DisplayName = "SuspensionUp"),
+	HFD_SurfaceNormal 	UMETA(DisplayName = "SurfaceNormal")
+};
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable )
 class HOVERVEHICLE_API UHoverSuspensionComponent : public USceneComponent
 {
 	GENERATED_BODY()
 
 public:	
+
+	UPROPERTY(EditAnywhere)
+	EHoverSuspensionForceDirEnum ForceDirEnum;
+
 	UPROPERTY(EditAnywhere)
 	float HoverDistance;
 
@@ -37,16 +47,20 @@ public:
 	// Sets default values for this component's properties
 	UHoverSuspensionComponent();
 
+	void UpdateSpringVelocity(const FVector& ImpactLocation, float DeltaSeconds);
+
 
 protected:
 	float DistanceFromSurface;
 	float PrevDistanceFromSurface;
 	float SpringVelocity;
+	FVector ForceDir;
 
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	void UpdateSpringVelocity(const FVector& ImpactLocation, float DeltaSeconds);
+
+	virtual float CalculateSpringForce(float DeltaTime, const FVector& HitLocation);
 
 public:	
 	// Called every frame
@@ -55,4 +69,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void SetTargetBody(UStaticMeshComponent* body);
 	
+	UFUNCTION(BlueprintCallable)
+	virtual void SetHoverDistance(float Distance) { HoverDistance = Distance; }
 };
