@@ -34,7 +34,7 @@ void UHoverSuspensionComponent::UpdateSpringVelocity(const FVector& ImpactLocati
 }
 
 
-void DrawDebugLinetrace(bool bHit, const FHitResult& HitResult, const UWorld* World, const FVector& Start, const FVector& End)
+void DrawDebugLinetraceA(bool bHit, const FHitResult& HitResult, const UWorld* World, const FVector& Start, const FVector& End)
 {
 	FColor TraceColor = FColor::Red;
 	FColor TraceHitColor = FColor::Green;
@@ -92,7 +92,7 @@ void UHoverSuspensionComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 	bool bHit = GetWorld()->LineTraceSingleByChannel(OutHit, WorldPos, TraceEnd, ECC_Visibility);
 
 	// temp debug draw
-	DrawDebugLinetrace(bHit, OutHit, GetWorld(), WorldPos, TraceEnd);
+	DrawDebugLinetraceA(bHit, OutHit, GetWorld(), WorldPos, TraceEnd);
 
 	if(!bHit)
 		return;

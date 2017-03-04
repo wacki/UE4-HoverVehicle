@@ -13,13 +13,47 @@ class HOVERVEHICLE_API AHoverVehicleBase : public APawn
 public:
 	UPROPERTY(EditAnywhere)
 	float HoverDistance;
+
+	UPROPERTY(EditAnywhere)
+	bool IsMagnetic;
 	
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* VehicleMesh;
+
+	UPROPERTY(EditAnywhere)
+	float SpringStiffness;
+
+	UPROPERTY(EditAnywhere)
+	float HoverDampening;
+
+	UPROPERTY(EditAnywhere)
+	FVector GoalUpVector;
+
 	// Sets default values for this pawn's properties
 	AHoverVehicleBase();
+
+	UFUNCTION(BlueprintCallable)
+	void SetVehicleMesh(UStaticMeshComponent* Mesh) { VehicleMesh = Mesh; }
+
+private:
+	float HoverSpringVelocity;
+	float PrevHoverSpringDelta;
+
+	float OrientationSpringVelocity;
+	float PrevOrientationSpringDelta;
+
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	virtual float CalculateSpringForce(float RestPositionDelta, float DeltaTime, float Velocity);
+	
+	virtual FVector CalculateFrictionForce();
+
+	virtual void UpdateHoverForce(float DeltaTime);
+
+	virtual void UpdateSelfRightingTorque(float DeltaTime);
 
 public:	
 	// Called every frame
@@ -29,5 +63,5 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable)
-	virtual void SetUpOrientation();	
+	virtual void SetUpOrientation(const FVector& Dir);	
 };

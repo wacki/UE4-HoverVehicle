@@ -54,7 +54,6 @@ protected:
 	float DistanceFromSurface;
 	float PrevDistanceFromSurface;
 	float SpringVelocity;
-	FVector ForceDir;
 
 	// Called when the game starts
 	virtual void BeginPlay() override;
