@@ -209,7 +209,7 @@ float AHoverVehicleBase::CalculateSpringForce(float RestPositionDelta, float Del
 
 
 	/*/
-	// Testwise implementation of a more controllable spring equation
+	// Testwise implementation of a more controllable spring equation maybe?
 	// source: https://www.gamedev.net/resources/_/technical/math-and-physics/towards-a-simpler-stiffer-and-more-stable-spring-r3227
 	//F = -m / (DeltaTime*DeltaTime) * Ck * x - m / DeltaTime * Cd * v
 
