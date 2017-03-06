@@ -12,8 +12,9 @@ UCLASS()
 class HOVERVEHICLE_API AHoverVehicleGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
-	
-	
+
+
+public:
+	AHoverVehicleGameModeBase();
 	
 };

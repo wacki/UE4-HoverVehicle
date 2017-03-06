@@ -42,6 +42,10 @@ private:
 	float OrientationSpringVelocity;
 	float PrevOrientationSpringDelta;
 
+	FVector CurrentGroundNormal;
+	FQuat UpOrientationOffset;
+
+	bool IsOnGround;
 
 protected:
 	// Called when the game starts or when spawned
@@ -49,7 +53,7 @@ protected:
 
 	virtual float CalculateSpringForce(float RestPositionDelta, float DeltaTime, float Velocity);
 	
-	virtual FVector CalculateFrictionForce();
+	virtual void CalculateFrictionForce();
 
 	virtual void UpdateHoverForce(float DeltaTime);
 
@@ -63,5 +67,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable)
-	virtual void SetUpOrientation(const FVector& Dir);	
+	virtual void SetUpOrientationOffset(const FRotator& Offset) {
+		UpOrientationOffset = FQuat(Offset);
+	}
 };
